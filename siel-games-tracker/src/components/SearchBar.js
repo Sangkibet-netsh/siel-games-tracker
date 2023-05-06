@@ -1,28 +1,59 @@
-import React , {useEffect, useState} from 'react'
+import { useState } from "react";
+import GameCard from "./GameCard";
 
- function SearchBar( {setFilterGames} ) {
+ function SearchBar({details}) {
  
- const [searchGame , setSearchGame] = useState("")
+  const [searchField, setSearchField] = useState("");
+  const [searchShow, setSearchShow] = useState(false);
 
- useEffect(() => {
-    fetch (`"http://localhost:8000/games"${searchGame}`)
-    .then ((r) => r.json())
-    .then (data => {setFilterGames(data)})
-   }, [searchGame]);
+  const filteredGames = details.filter(
+    games => {
+      return (
+        games.home?.toLowerCase().includes(searchField.toLowerCase()) ||
+        games.away?.toLowerCase().includes(searchField.toLowerCase())
+      );
+      
+    }
+  );
 
-   function handleGameSearch(e) {
-    setSearchGame (e.target.value)
-   }
-    
-    return (
-    <div>
-    <form>
-    <input type='text' placeholder='search game...'  onChange={handleGameSearch}></input>
-    </form>
-    
-    </div>
-  )
+  const handleChange = e => {
+    setSearchField(e.target.value);
+    if(e.target.value===""){
+      setSearchShow(false);
+    }
+    else {
+      setSearchShow(true);
+    }
+  };
+
+  function searchList() {
+  	if (searchShow) {
+	  	return (
+	  		
+	  			<GameCard filteredGames={filteredGames} />
+	  		
+	  	);
+	  }
+  }
+
+  return (
+    <section className="garamond">
+			<div className="navy georgia ma0 grow">
+				<h2 className="f2">Search your course</h2>
+			</div>
+			<div className="pa2">
+				<input 
+					className="pa3 bb br3 grow b--none bg-lightest-blue ma3"
+					type = "search" 
+					placeholder = "Search Games" 
+					onChange = {handleChange}
+				/>
+			</div>
+			{searchList()}
+		</section>
+  );
 }
+
 
 
 export default SearchBar
